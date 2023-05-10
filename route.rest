@@ -16,7 +16,7 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/index/645b16285151c26c0c3f5fd6
+DELETE http://localhost:3000/index/645b19547bc2d971014eb449
 
 ###
 

@@ -8,7 +8,7 @@ const should = chai.should();
 const expect = chai.expect;
 const assert = chai.assert;
 
-const Quote = require('../models/quotes.js')
+const Quote = require('../models/quote.js')
 
 chai.use(chaiHttp);
 
@@ -20,122 +20,112 @@ after((done) => {
 })
 
 describe("API Tests", function() {
-  it("TODO: Should test each endpoint of your API");
 
-  /*
-  
-    beforeEach((done) => {
-        // TODO: add any beforeEach code here
-        const sampleMessage = new Message({
-            title: "message-title",
-            body: "The body of the message contains a lot of words",
-            author: USER_ID,
-            _id: MESSAGE_ID
-        })
-        
-        sampleMessage.save()
-        .then(() => {
+  beforeEach((done) => {
+    const sampleQuote = new Quote({
+      body: "The body of the quote contains a lot of words",
+      author: "Anonymous author",
+      _id: 'aaaaaaaaaaaa'
+    })
+    
+    sampleQuote.save()
+    .then(() => {
+        done()
+    })
+  })
+
+  afterEach((done) => {
+    Quote.deleteMany({ _id: "aaaaaaaaaaaa" })
+    .then(() => {
+        done()
+    })
+  })
+
+  it('should load all quotes', (done) => {
+      chai.request(app)
+      .get('/index')
+      .end((err, res) => {
+          if (err) { done(err) }
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an("array")
+          done()
+      })
+  })
+
+  it('should get one specific quote', (done) => {
+    chai.request(app)
+    .get(`/index/aaaaaaaaaaaa`)
+    .end((err, res) => {
+        if (err) { done(err) }
+        expect(res).to.have.status(200)
+        expect(res.body).to.be.an('object')
+        expect(res.body.author).to.equal('Anonymous author')
+        expect(res.body.body).to.equal('The body of the quote contains a lot of words')
+        done()
+    })
+  })
+
+  it('should post a new quote', (done) => {
+    // const sampleQuote = new Qu({
+    //     username: 'myuser',
+    //     password: 'mypassword',
+    //     _id: USER_ID
+    // })
+    // sampleUser.save()
+
+    chai.request(app)
+    .post('/index')
+    .send({title: 'a-new-quote', body: 'this quote is really important'})
+    .end((err, res) => {
+      if (err) { done(err) }
+      expect(res.body).to.be.an('object')
+
+      // check that quote is actually inserted into database
+      Quote.findOne({title: 'a-new-quote'}).then(quote => {
+          expect(quote).to.be.an('object')
+      })
+      
+      done()
+
+    })
+    //User.deleteMany({ username: ['myuser'] })
+  })
+
+  it('should update a quote', (done) => {
+    chai.request(app)
+    .put(`/index/aaaaaaaaaaaa`)
+    .send({
+      author: 'George Lucas',
+      body:"something very interesting"
+    })
+    .end((err, res) => {
+      if (err) { done(err) }
+      expect(res.body).to.be.an('object')
+      expect(res.body).to.have.property('author', 'George Lucas')
+
+      // check that quote is actually inserted into database
+      Quote.findOne({author: 'George Lucas'})
+      .then(quote => {
+          expect(quote).to.be.an('object')
+          done()
+      }).catch(err => {
+          throw err.message
+      })
+    })
+  })
+
+  it('should delete a quote', (done) => {
+    chai.request(app)
+    .delete(`/index/aaaaaaaaaaaa`)
+    .end((err, res) => {
+        if (err) { done(err) }
+        expect(res.body.message).to.equal('deleted quote')
+
+        // check that quote is actually deleted from database
+        Quote.findOne({author: 'Anonymous author'}).then(quote => {
+            expect(quote).to.equal(null)
             done()
         })
     })
-
-    afterEach((done) => {
-        // TODO: add any afterEach code here
-        Message.deleteMany({ _id: "aaaaaaaaaaaa" })
-        //Message.remove({})
-        .then(() => {
-            done()
-        })
-    })
-
-    it('should load all messages', (done) => {
-        // TODO: Complete this
-        chai.request(app)
-        .get('/messages')
-        .end((err, res) => {
-            if (err) { done(err) }
-            expect(res).to.have.status(200)
-            expect(res.body.messages).to.be.an("array")
-            done()
-        })
-    })
-
-    it('should get one specific message', (done) => {
-        // TODO: Complete this
-        chai.request(app)
-        .get(`/messages/${MESSAGE_ID}`)
-        .end((err, res) => {
-            if (err) { done(err) }
-            expect(res).to.have.status(200)
-            expect(res.body.message).to.be.an('object')
-            expect(res.body.message.title).to.equal('message-title')
-            expect(res.body.message.body).to.equal('The body of the message contains a lot of words')
-            done()
-        })
-    })
-
-    it('should post a new message', (done) => {
-        const sampleUser = new User({
-            username: 'myuser',
-            password: 'mypassword',
-            _id: USER_ID
-        })
-        sampleUser.save()
-
-        // TODO: Complete this
-        chai.request(app)
-        .post('/messages')
-        .send({title: 'a-new-message', body: 'A new message that has a lot of words', author: USER_ID})
-        .end((err, res) => {
-            if (err) { done(err) }
-            expect(res.body).to.be.an('object')
-
-            // check that message is actually inserted into database
-            Message.findOne({title: 'a-new-message'}).then(message => {
-                expect(message).to.be.an('object')
-                done()
-            })
-        })
-        User.deleteMany({ username: ['myuser'] })
-    })
-
-    it('should update a message', (done) => {
-        // TODO: Complete this
-        chai.request(app)
-        .put(`/messages/${MESSAGE_ID}`)
-        .send({title: 'new-title'})
-        .end((err, res) => {
-            if (err) { done(err) }
-            expect(res.body.message).to.be.an('object')
-            expect(res.body.message).to.have.property('title', 'new-title')
-
-            // check that message is actually inserted into database
-            Message.findOne({title: 'new-title'})
-            .then(message => {
-                expect(message).to.be.an('object')
-                done()
-            }).catch(err => {
-                throw err.message
-            })
-        })
-    })
-
-    it('should delete a message', (done) => {
-        // TODO: Complete this
-        chai.request(app)
-        .delete(`/messages/${MESSAGE_ID}`)
-        .end((err, res) => {
-            if (err) { done(err) }
-            expect(res.body.message).to.equal('Successfully deleted.')
-            expect(res.body._id).to.equal(MESSAGE_ID)
-
-            // check that message is actually deleted from database
-            Message.findOne({title: 'message-title'}).then(message => {
-                expect(message).to.equal(null)
-                done()
-            })
-        })
-    })
-  
-  */
+  })
 });
