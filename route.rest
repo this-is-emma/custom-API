@@ -1,0 +1,38 @@
+GET http://localhost:3000/index
+
+###
+
+GET http://localhost:3000/index/645b16285151c26c0c3f5fd6
+
+###
+
+POST http://localhost:3000/index
+Content-Type: application/json
+
+{
+    "body": "'You miss 100% of the chances you don't take' -Wayne Gretzky",
+    "author": "Michael Scott"
+}
+
+###
+
+DELETE http://localhost:3000/index/645b16285151c26c0c3f5fd6
+
+###
+
+PATCH http://localhost:3000/index/645b19547bc2d971014eb449
+Content-Type: application/json
+
+{
+    "body": "That's what she said"
+}
+
+### 
+
+PUT http://localhost:3000/index/645b19547bc2d971014eb449
+Content-Type: application/json
+
+{
+    "body": "I am not superstitious, I am just a little bit stitious",
+    "author": "Michael Scott"
+}

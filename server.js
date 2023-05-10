@@ -17,6 +17,8 @@ app.use(cookieParser());
 
 require('./data/db');
 
+//Web Dev Simpl - I DID NOT DO app.use(express.json) because I have bodyParser
+
 var checkAuth = (req, res, next) => {
   console.log("Checking authentication");
   if (typeof req.cookies.nToken === "undefined" || req.cookies.nToken === null) {
@@ -34,6 +36,8 @@ app.use(checkAuth);
 
 // TODO: Add each controller here, after all middleware is initialized.
 
+const indexRouter = require('./routes/index')
+app.use('/index', indexRouter)
 
 app.listen(3000, () => {
     console.log('API listening on port http://localhost:3000!');
