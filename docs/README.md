@@ -19,14 +19,14 @@ Content-Type: application/json
             "id": 1,
             "body": "The greatest glory in living lies not in never falling, but in rising every time we fall.",
             "author": "Nelson Mandela",
-            "dateAdded": "2022-02-01"
+            "dateAdded": "2023-05-10T14:13:38.567Z"
 
         },
         {
             "id": 2,
             "body": "Believe you can and you're halfway there.",
             "author": "Theodore Roosevelt",
-            "dateAdded": "2023-03-15"
+            "dateAdded": "2023-05-10T14:13:38.567Z"
         },
         ...
     ]
