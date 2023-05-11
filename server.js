@@ -2,19 +2,19 @@ require('dotenv').config();
 
 const express = require('express');
 var cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
 
 const app = express();
+const jwt = require('jsonwebtoken');
 
 const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
 app.use(expressValidator());
 app.use(cookieParser());
 
+require('./controllers/auth.js')(app);
 require('./data/db');
 
 //Web Dev Simpl - I DID NOT DO app.use(express.json) because I have bodyParser
