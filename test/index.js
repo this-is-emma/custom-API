@@ -7,6 +7,8 @@ chai.config.includeStack = true;
 const should = chai.should();
 const expect = chai.expect;
 const assert = chai.assert;
+const User = require('../models/user');
+const agent = chai.request.agent(app);
 
 const Quote = require('../models/quote.js')
 
@@ -21,13 +23,32 @@ after((done) => {
 
 describe("API Tests", function() {
 
+  const user = {
+    username: 'poststest',
+    password: 'testposts',
+  };
+
+  before(function (done) {
+    agent
+    .post('/sign-up')
+    .set('content-type', 'application/x-www-form-urlencoded')
+    .send(user)
+    .then(function (res) {
+      done();
+    })
+    .catch(function (err) {
+      done(err);
+    });
+
+  });
+
   beforeEach((done) => {
     const sampleQuote = new Quote({
       body: "The body of the quote contains a lot of words",
       author: "Anonymous author",
       _id: 'aaaaaaaaaaaa'
     })
-    
+
     sampleQuote.save()
     .then(() => {
         done()
@@ -42,14 +63,14 @@ describe("API Tests", function() {
   })
 
   it('should load all quotes', (done) => {
-      chai.request(app)
-      .get('/index')
-      .end((err, res) => {
-          if (err) { done(err) }
-          expect(res).to.have.status(200)
-          expect(res.body).to.be.an("array")
-          done()
-      })
+    chai.request(app)
+    .get('/index')
+    .end((err, res) => {
+      if (err) { done(err) }
+      expect(res).to.have.status(200)
+      expect(res.body).to.be.an("array")
+      done()
+    }) 
   })
 
   it('should get one specific quote', (done) => {
@@ -66,13 +87,6 @@ describe("API Tests", function() {
   })
 
   it('should post a new quote', (done) => {
-    // const sampleQuote = new Qu({
-    //     username: 'myuser',
-    //     password: 'mypassword',
-    //     _id: USER_ID
-    // })
-    // sampleUser.save()
-
     chai.request(app)
     .post('/index')
     .send({title: 'a-new-quote', body: 'this quote is really important'})
@@ -83,12 +97,10 @@ describe("API Tests", function() {
       // check that quote is actually inserted into database
       Quote.findOne({title: 'a-new-quote'}).then(quote => {
           expect(quote).to.be.an('object')
-      })
-      
+      })    
       done()
-
     })
-    //User.deleteMany({ username: ['myuser'] })
+    Quote.deleteMany({ title: ['a-new-quote'] })
   })
 
   it('should update a quote', (done) => {
