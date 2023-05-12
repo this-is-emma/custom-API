@@ -13,18 +13,19 @@ const agent = chai.request.agent(app);
 const User = require('../models/user');
 
 describe('User', function () {
-
   // TESTS WILL GO HERE.
   it('should not be able to login if they have not registered', function (done) {
-    agent.post('/login', { username: 'some-username-not-in-db', password: 'nope' }).end(function (err, res) {
-      res.should.have.status(401);
-      done();
-    });
+    agent
+      .post('/login', { username: 'some-username-not-in-db', password: 'nope' })
+      .end(function (err, res) {
+        res.should.have.status(401);
+        done();
+      });
   });
 
   // signup
   it('should be able to signup', function (done) {
-    User.findOneAndRemove({ username: 'testone' }, function() {
+    User.findOneAndRemove({ username: 'testone' }, function () {
       agent
         .post('/sign-up')
         .send({ username: 'testone', password: 'password' })
@@ -46,20 +47,19 @@ describe('User', function () {
         res.should.have.status(200);
         agent.should.have.cookie('nToken');
         done();
-    });
+      });
   });
 
-  after(function() {
+  after(function () {
     agent.close();
   });
 
   // logout
   it('should be able to logout', function (done) {
-      agent.get('/logout').end(function (err, res) {
+    agent.get('/logout').end(function (err, res) {
       res.should.have.status(200);
       agent.should.not.have.cookie('nToken');
       done();
-      });
+    });
   });
-
 });
