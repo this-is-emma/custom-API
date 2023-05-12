@@ -44,3 +44,6 @@ app.listen(3000, () => {
   });
 
 module.exports = app;
+
+
+// TODO:  Update doc with Auth endpoints / User auth tests - and you are ✅ ! 
