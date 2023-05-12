@@ -7,12 +7,11 @@ chai.config.includeStack = true;
 const should = chai.should();
 const expect = chai.expect;
 const assert = chai.assert;
+const { before, after, describe, it } = require('mocha');
 const User = require('../models/user');
-const agent = chai.request.agent(app);
-
 const Quote = require('../models/quote.js')
-
 chai.use(chaiHttp);
+const agent = chai.request.agent(app);
 
 after((done) => {
   mongoose.models = {}
@@ -24,8 +23,8 @@ after((done) => {
 describe("API Tests", function() {
 
   const user = {
-    username: 'poststest',
-    password: 'testposts',
+    username: 'user',
+    password: 'password',
   };
 
   before(function (done) {
@@ -64,6 +63,7 @@ describe("API Tests", function() {
 
   it('should load all quotes', (done) => {
     chai.request(app)
+    agent
     .get('/index')
     .end((err, res) => {
       if (err) { done(err) }
@@ -75,6 +75,7 @@ describe("API Tests", function() {
 
   it('should get one specific quote', (done) => {
     chai.request(app)
+    agent
     .get(`/index/aaaaaaaaaaaa`)
     .end((err, res) => {
         if (err) { done(err) }
@@ -88,8 +89,9 @@ describe("API Tests", function() {
 
   it('should post a new quote', (done) => {
     chai.request(app)
+    agent
     .post('/index')
-    .send({title: 'a-new-quote', body: 'this quote is really important'})
+    .send({author: 'a new author', body: 'this quote is really important'})
     .end((err, res) => {
       if (err) { done(err) }
       expect(res.body).to.be.an('object')
@@ -100,11 +102,11 @@ describe("API Tests", function() {
       })    
       done()
     })
-    Quote.deleteMany({ title: ['a-new-quote'] })
   })
 
   it('should update a quote', (done) => {
     chai.request(app)
+    agent
     .put(`/index/aaaaaaaaaaaa`)
     .send({
       author: 'George Lucas',
@@ -128,16 +130,25 @@ describe("API Tests", function() {
 
   it('should delete a quote', (done) => {
     chai.request(app)
+    agent
     .delete(`/index/aaaaaaaaaaaa`)
     .end((err, res) => {
         if (err) { done(err) }
         expect(res.body.message).to.equal('deleted quote')
 
         // check that quote is actually deleted from database
-        Quote.findOne({author: 'Anonymous author'}).then(quote => {
+        Quote.findOne({author: 'George Lucas'}).then(quote => {
             expect(quote).to.equal(null)
             done()
         })
     })
+  });
+
+  after((done) => {
+    console.log('went into after!')
+    Quote.deleteMany({author: 'a new author'}).then(() => {
+      done()
+    })
   })
+
 });
