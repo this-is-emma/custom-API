@@ -1,36 +1,288 @@
-# 🔐 auth-api-starterpack
+# 1001 reasons why you will have a good day!
 
-[![GitHub](https://img.shields.io/github/forks/droxey/auth-api-starterpack.svg?style=flat-square)](https://github.com/droxey/auth-api-starterpack/network)
-[![GitHub](https://img.shields.io/github/issues/droxey/auth-api-starterpack.svg?style=flat-square)](https://github.com/droxey/auth-api-starterpack/issues)
-[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square)](http://opensource.org/licenses/MIT)
+## Introduction
+Welcome to the "1001 reasons why you will have a good day" API! This API provides access to a collection of motivational quotes to help brighten your day. The API has the following endpoints: GET, PUT, PATCH, POST, and DELETE.
 
-Custom, authenticated API instructions and starter pack for BEW 1.3 students!
+## Authentication 
+This API requires authentication.  It includes the following endpoints:
 
-## Installation
+## Authentication API
 
-1. Fork this repository and clone your fork locally.
-1. Open the repository folder in your editor of choice:
+The Authentication API is responsible for user authentication and session management. It includes the following endpoints:
 
-    ```bash
-    $ cd auth-api-starterpack
-    $ atom .
-    ```
+### Sign-Up
 
-1. Run `npm install` to install project dependencies into the activated environment.
-1. Execute `npm start` to run the development server.
+This endpoint is used to create a new user account.
 
-## Development
+#### Endpoint URL
 
-### `#TODO` === Hint
+```
+POST /sign-up
+```
 
-* I've added **helpful `#TODO` placeholders, comments, and hints throughout the project** to jog your memory in case you need a hand! Simply `CTRL` + `Shift` + `F` to Find All in your editor, and **search for `#TODO`.** You'll find a helpful list of hints waiting for you!
+#### Request Body
 
-## Deployment
+The request body should contain the user's information:
 
-### Heroku
+| Parameter     | Type   | Required | Description                           |
+| ------------- | ------ | -------- | ------------------------------------- |
+| `username`    | string | Yes      | The user's username (must be unique). |
+| `password`    | string | Yes      | The user's password.                  |
 
-Follow this [Node.js Deployment Guide](https://devcenter.heroku.com/articles/getting-started-with-nodejs) to deploy your application on Heroku. Be sure to complete all of the steps!
 
-## [BEW 1.3] Project Requirements
+#### Response
 
-* View the [**requirements document**](https://github.com/Product-College-Courses/BEW-1.2-Authentication-and-Associations/blob/master/Projects/02-Custom-API-Project.md) in the [Class Repository](https://github.com/Product-College-Courses/BEW-1.2-Authentication-and-Associations).
+If the request is successful, the server will respond with an HTTP 201 status code and a JSON object:
+
+```
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+    "message": 'New user created'
+}
+```
+
+### Login
+
+This endpoint is used to authenticate a user and generate a session token. The session token is required for accessing protected resources on the server.
+
+#### Endpoint URL
+
+```
+POST /login
+```
+
+#### Request Body
+
+The request body should contain the user's credentials:
+
+| Parameter   | Type   | Required | Description                     |
+| ----------- | ------ | -------- | ------------------------------- |
+| `username`  | string | Yes      | The user's username.            |
+| `password`  | string | Yes      | The user's password.            |
+
+#### Response
+
+If the credentials are valid, the server will respond with an HTTP 200 status code and a JSON object:
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "message": 'You are now logged in!' 
+}
+```
+
+If the credentials are invalid, the server will respond with an HTTP 401 status code and an error message:
+
+```
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json
+
+{
+  "message": "Wrong Username or password"
+}
+```
+
+### Logout
+
+This endpoint is used to invalidate a session token and log out a user.
+
+#### Endpoint URL
+
+```
+POST /logout
+```
+
+#### Response
+
+If the session token is valid, the server will respond with an HTTP 200 status code and a success message:
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "message": "user logged out"
+}
+```
+
+
+## Endpoints
+
+### GET /index
+Returns a list of all available quotes.
+
+#### Response
+```
+Status code: 200 OK
+Content-Type: application/json
+
+{
+    [
+        {
+            "_id": "645ba2f3eb235a7afc00f21a",
+            "body": "'You miss 100% of the chances you don't take' -Wayne Gretzky",
+            "author": "Michael Scott",
+            "dateAdded": "2023-05-10T13:58:11.642Z",
+            "__v": 0
+        },
+        {
+            "_id": "645c749f3c96321e7e9e1a5a",
+            "body": "It has an oaky afterbirth",
+            "author": "Michael Scott",
+            "dateAdded": "2023-05-11T04:52:47.038Z",
+            "__v": 0
+        }
+        ...
+    ]
+}
+```
+
+### GET /index/{id}
+Returns a single quote by ID.
+
+#### Response
+```
+Status code: 200 OK
+Content-Type: application/json
+
+{
+    "_id": "645ba2f3eb235a7afc00f21a",
+    "body": "'You miss 100% of the chances you don't take' -Wayne Gretzky",
+    "author": "Michael Scott",
+    "dateAdded": "2023-05-10T13:58:11.642Z",
+    "__v": 0
+}
+```
+
+#### Error Responses
+```
+Status code: 404 Not Found
+Content-Type: application/json
+
+{
+    "error": "Quote with id 1 not found."
+}
+```
+
+### PUT /index/{id}
+Updates a quote by ID.
+
+#### Request Body
+```
+Content-Type: application/json
+
+{
+    "body": "New quote content",
+    "author": "New quote author"
+}
+```
+
+#### Response
+```
+Status code: 200 OK
+Content-Type: application/json
+
+{
+    "id": 1,
+    "text": "New quote text",
+    "author": "New quote author"
+}
+
+```
+
+#### Error Responses
+```
+Status code: 404 Not Found
+Content-Type: application/json
+
+{
+    "error": "Cannot find quote"
+}
+```
+
+### PATCH /index/{id}
+Updates a quote by ID.
+
+#### Request Body
+```
+Content-Type: application/json
+
+{
+    "body": "New quote content",
+}
+```
+
+#### Response
+```
+Status code: 200 OK
+Content-Type: application/json
+
+{
+    "id": 1,
+    "text": "New quote text",
+    "author": "quote author"
+}
+
+```
+
+#### Error Responses
+```
+Status code: 400 
+Content-Type: application/json
+
+{
+    "error": "Cannot find quote"
+}
+```
+
+
+### POST /quotes
+Creates a new quote.
+
+#### Request Body
+```
+Content-Type: application/json
+
+{
+    "body": "Quote text",
+    "author": "Quote author"
+}
+```
+
+#### Response
+```
+Status code: 201 Created
+Content-Type: application/json
+
+{
+
+    "id": 1002,
+    "body": "Quote text",
+    "author": "Quote author"
+    
+}
+```
+
+### DELETE /quotes/{id}
+Deletes a quote by ID.
+
+#### Response
+```
+{
+    message: "deleted quote"
+}
+```
+
+#### Error Responses
+```
+Status code: 404 Not Found
+Content-Type: application/json
+
+{
+    "error": "Cannot find quote"
+}
+```
